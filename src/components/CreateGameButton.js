@@ -25,14 +25,27 @@ const styles = theme => ({
 });
   
 class CreateGameButton extends PureComponent {
-    createGameAction = () => {
-       this.props.createGame({gamedata: {
-         board: [[0,0,0,0,0,0],
-         [0,0,0,0,0,0],
-         [0,0,0,0,0,0],
-         [0,0,0,0,0,0],
-         [0,0,0,0,0,0],
-         [0,0,0,0,0,0]]
+
+  createGameAction = () => {
+    let arr = []
+    const size=6
+    for(let i=0;i < size;i++)
+      for(let j=0;j < size;j++)
+        arr.push([i,j])
+    arr.sort((a,b) => (0.5 - Math.random()))
+    arr.sort((a,b) => (0.5 - Math.random()))
+    const newLocked=[arr.pop(),arr.pop(),arr.pop()]
+    const newBoard=[[0,0,0,0,0,0],
+    [0,0,0,0,0,0],
+    [0,0,0,0,0,0],
+    [0,0,0,0,0,0],
+    [0,0,0,0,0,0],
+    [0,0,0,0,0,0]] 
+    newLocked.map(c => newBoard[c[0]][c[1]] = 1 + Math.floor(Math.random()*2))
+
+    this.props.createGame({gamedata: {
+         board: newBoard,
+         locked: newLocked
        }})
     }
 

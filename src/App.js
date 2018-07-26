@@ -5,13 +5,18 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 import './App.css';
 import Typography from '@material-ui/core/Typography'
 
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+};
 
 
 class App extends Component {
   render() {
     return (
       <Router>
-        <div>
+        <div className="App">
           <header><Typography class="title">0hh1 demo by wessel</Typography></header>
           <Route exact path="/games" component={GamesContainer} />
           <Route exact path="/games/:id" component={GameContainer} />

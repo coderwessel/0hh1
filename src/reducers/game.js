@@ -7,8 +7,10 @@ const reducer = (state = initialState, action = {}) => {
   switch (action.type) {
   case FETCH_GAME:
     return action.payload.game
+    
   case UPDATE_GAME:
-    return [...state].filter((item)=>!(item.id===action.payload.id)).push(action.payload)
+    return action.payload.game  
+  // return [...state].filter((item)=>!(item.id===action.payload.id)).push(action.payload)
   default:
     return state
   }
