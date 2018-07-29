@@ -5,6 +5,8 @@ import React, {PureComponent} from 'react'
 //redux imports
 import {connect} from 'react-redux'
 import { fetchGame, updateGame } from '../actions/game'
+import { updateGameLogic} from '../actions/gamelogic'
+import { startNewGame, playingGame, finishGame} from '../actions/gamestatus'
 //router imports
 import {Link} from 'react-router-dom'
 
@@ -19,6 +21,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography'
 import CreateGameButton from './CreateGameButton';
 import Button from '@material-ui/core/Button'
+import GameDialog from './GameDialog'
+import Lock from '@material-ui/icons/Lock'
+
+
 
 //material.ui styles
 const styles = theme => ({
@@ -34,6 +40,8 @@ const styles = theme => ({
       minWidth: 700,
     },
     row:{
+      alignItems: 'center',
+      justifyContent: 'center',
       display: 'flex',
       flexflow: 'row' ,
       flexdirection: 'row',
@@ -64,7 +72,7 @@ const styles = theme => ({
       backgroundColor: 'red'
     },
     lockedfill1: {
-      backgroundColor: 'DarkBlue'  
+      backgroundColor: 'DarkBlue',
     },
     lockedfill2:{
       backgroundColor: 'FireBrick'
@@ -74,13 +82,16 @@ const styles = theme => ({
 class GameContainer extends PureComponent {
   componentDidMount() {
   this.props.fetchGame(this.props.match.params.id)
+  this.calculateGameLogic()
     }
   componentWillMount() {
     this.props.fetchGame(this.props.match.params.id)
+    this.calculateGameLogic()
     }
 
   doMove = (r,c) => {
       //alert(`here I would maybe update ${r},${c} in game ${this.props.match.params.id}`)
+      this.props.playingGame()
       if (this.props.game.gamedata.locked.some( (a) => a[0]===r && a[1]===c ))return
 
       const newboard = [...this.props.game.gamedata.board]
@@ -91,9 +102,11 @@ class GameContainer extends PureComponent {
           { board: newboard, 
             locked: newlocked
     }},this.props.match.params.id)
+    this.calculateGameLogic()
   }
 
   resetBoard = () => {
+    startNewGame()
     let newboard = [...this.props.game.gamedata.board]
     const newlocked = [...this.props.game.gamedata.locked]
     for(let r=0;r<=5;r++){
@@ -105,13 +118,18 @@ class GameContainer extends PureComponent {
           { board: newboard, 
             locked: newlocked
     }},this.props.match.params.id)
+    this.calculateGameLogic()
   }
 
-  render() {
-    //matrial.ui
-    const { classes } = this.props;
-    //redux
-    const {game} = this.props //mind the case of games
+  handleGameDialogClose = () => {
+    this.props.playingGame()
+
+  }
+
+  calculateGameLogic = () => {
+    const {game} = this.props 
+    let complete=0
+    let numErrors=0
     let validRows=[
       [true,true,true,true,true,true],
       [true,true,true,true,true,true],
@@ -136,11 +154,37 @@ class GameContainer extends PureComponent {
         }
       } 
     }
-    // console.log(game.gamedata.board)
+    
+    if(game.gamedata){
+    for (let i=0;i<6;i++) complete += game.gamedata.board[i].filter(cell=>cell!=0).length
+    complete = Math.floor((complete/36)*100)
+    for (let i=0;i<3;i++) numErrors += validRows[i].filter(valid=>!valid).length
+    for (let i=0;i<3;i++) numErrors += validCols[i].filter(valid=>!valid).length
+    }// console.log(game.gamedata.board)
     console.log(validRows[1])
+    if(complete===100 && numErrors===0)this.props.finishGame()
+    const newGameLogic = {validRows:validRows,
+                          validCols: validCols,
+                        complete: complete,
+                      numErrors: numErrors }
+    this.props.updateGameLogic(newGameLogic)
+
+  }
+
+  render() {
+    //matrial.ui
+    const { classes } = this.props;
+    //redux
+    const {game, gamelogic, gamestatus} = this.props //mind the case of games
+        
     return (
         <div>
-            <Typography> Game {game.id && game.id} {!game.id && 'loading'}</Typography>
+            <GameDialog
+              open={gamestatus.finishgame}
+              onClose={this.handleGameDialogClose}
+            />
+            <Typography> Game {game.id && game.id} {!game.id && 'loading'} {game.id && gamelogic.complete }%</Typography>
+            <CreateGameButton/> 
             {game.id && <Button variant="contained" 
                           color="secondary" className={classes.button}
                           onClick={this.resetBoard}>Reset Game</Button>}
@@ -153,17 +197,21 @@ class GameContainer extends PureComponent {
                     className={classes.row}> 
                       {row.map( (cell,cellIndex) => {
                         let border=`${classes.invalidborder}`
-                        let squarefill='fuckyou'
+                        let squarefill='undefined'
                         if (cell===0) {squarefill=`${classes.fill0}`}
                         if (cell===1) {squarefill=`${classes.fill1}`}
                         if (cell===2) {squarefill=`${classes.fill2}`}
                         if (cell===1 && game.gamedata.locked.some((a)=>a[0]===rowIndex&&a[1]===cellIndex)) {squarefill=`${classes.lockedfill1}`}
                         if (cell===2 && game.gamedata.locked.some((a)=>a[0]===rowIndex&&a[1]===cellIndex)) {squarefill=`${classes.lockedfill2}`}
-                        if (validRows[cell][rowIndex] && validCols[cell][cellIndex]) border=`${classes.validborder}`
+                        if (gamelogic.validRows[cell][rowIndex] && gamelogic.validCols[cell][cellIndex]) border=`${classes.validborder}`
                         return (<div 
                           key={cellIndex}
                           className={`${classes.square} ${border} ${squarefill}`} 
-                          onClick={this.doMove.bind(null,rowIndex,cellIndex)}></div>)
+                          onClick={this.doMove.bind(null,rowIndex,cellIndex)}>
+                          {game.gamedata.locked.some(
+                            (a)=>a[0]===rowIndex&&a[1]===cellIndex) &&
+                            <Lock/>}
+                          </div>)
                         }
                       )}
                     </div>
@@ -185,11 +233,13 @@ GameContainer.propTypes = {
 //redux
 const mapStateToProps = function (state) {
   return {
-    game: state.game
+    game: state.game,
+    gamelogic: state.gamelogic,
+    gamestatus: state.gamestatus
   }
 }
 
 //redux and material.ui cobined export
 export default withStyles(styles)(connect(mapStateToProps,
-    {  fetchGame, updateGame }
+    {  fetchGame, updateGame, updateGameLogic, playingGame, startNewGame, finishGame }
 )(GameContainer))

@@ -5,6 +5,7 @@ import React, {PureComponent} from 'react'
 //redux imports
 import {connect} from 'react-redux'
 import { createGame } from '../actions/games'
+import {startNewGame} from '../actions/gamestatus'
 //router imports
 // import {Link} from 'react-router-dom'
 
@@ -34,7 +35,8 @@ class CreateGameButton extends PureComponent {
         arr.push([i,j])
     arr.sort((a,b) => (0.5 - Math.random()))
     arr.sort((a,b) => (0.5 - Math.random()))
-    const newLocked=[arr.pop(),arr.pop(),arr.pop()]
+    const newLocked = []
+    for(let i=0;i<size;i++)newLocked.push(arr.pop())
     const newBoard=[[0,0,0,0,0,0],
     [0,0,0,0,0,0],
     [0,0,0,0,0,0],
@@ -47,7 +49,9 @@ class CreateGameButton extends PureComponent {
          board: newBoard,
          locked: newLocked
        }})
-    }
+     this.props.startNewGame()  
+    // this.props.history.push(`/adverts/${advertId}/addbid`)
+  }
 
   render() {
     //matrial.ui
@@ -72,11 +76,12 @@ CreateGameButton.propTypes = {
 //redux
 const mapStateToProps = function (state) {
   return {
-    games: state.games
+    games: state.games,
+    gamestatus: state.gamestatus
   }
 }
 
 //redux and material.ui cobined export
 export default withStyles(styles)(connect(mapStateToProps,
-    {  createGame }
+    {  createGame, startNewGame }
 )(CreateGameButton))

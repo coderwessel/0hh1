@@ -1,4 +1,5 @@
 //actions/games.js
+import {fetchGame} from './game'
 import * as request from 'superagent'
 
 const baseUrl = 'http://localhost:4000'
@@ -20,14 +21,15 @@ export function fetchAllGames() {
 
 export function createGame(game) {
   return function (dispatch){
-    
     request
       .post(`${baseUrl}/games/`)
       .send(game)
-      .then(response => dispatch({
+      .then(response => {dispatch({
         type: ADD_GAME,
         payload: response.body
-      }))
+        })
+        dispatch(fetchGame(response.body.id))   
+      })
       .catch(err => alert(err))
   }
 }
