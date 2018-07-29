@@ -82,8 +82,7 @@ class GameContainer extends PureComponent {
   componentDidMount() {
   this.props.fetchGame(this.props.match.params.id)
   if(this.props.game.id){
-    let rcg=new RowColGame()
-    const newGameLogic = rcg.calculateGameLogic(this.props.game.gamedata) 
+    const newGameLogic = RowColGame.calculateGameLogic(this.props.game.gamedata) 
     this.props.updateGameLogic({gamelogic:newGameLogic})
   }
 //  if(this.props.gamelogic.complete===100 && this.props.gamelogic.numErrors===0) this.props.finishGame()
@@ -91,29 +90,27 @@ class GameContainer extends PureComponent {
   componentWillMount() {
     this.props.fetchGame(this.props.match.params.id)
     if(this.props.game.id){
-      let rcg=new RowColGame()
-      const newGameLogic = rcg.calculateGameLogic(this.props.game.gamedata) 
+      const newGameLogic = RowColGame.calculateGameLogic(this.props.game.gamedata) 
       this.props.updateGameLogic({gamelogic:newGameLogic})
     }
   }
 
   doMove = (r,c) => {
       this.props.playingGame()
-      let rcg=new RowColGame()
-      const newGameData = rcg.doMove(this.props.game.gamedata,r,c)
+
+      const newGameData = RowColGame.doMove(this.props.game.gamedata,r,c)
       this.props.updateGame({gamedata: newGameData},this.props.match.params.id)
-      const newGameLogic = rcg.calculateGameLogic(newGameData) 
+      const newGameLogic = RowColGame.calculateGameLogic(newGameData) 
       this.props.updateGameLogic(newGameLogic)
       if(newGameLogic.complete===100 && newGameLogic.numErrors===0) this.props.finishGame()
     }
 
   resetBoard = () => {
     startNewGame()
-    let rcg=new RowColGame()
-    const newGameData = rcg.resetBoard(this.props.game.gamedata)
+    const newGameData = RowColGame.resetBoard(this.props.game.gamedata)
     this.props.updateGame({gamedata: newGameData},this.props.match.params.id)
  
-    const newGameLogic = rcg.calculateGameLogic(newGameData) 
+    const newGameLogic = RowColGame.calculateGameLogic(newGameData) 
     this.props.updateGameLogic(newGameLogic)
     if(newGameLogic.complete===100 && newGameLogic.numErrors===0) this.props.finishGame()
   }

@@ -1,7 +1,7 @@
 //misc/RowColGame.js
 
-export default class RowColGame {
-    constructor() {}
+const RowColGame = {
+    // constructor() {}
   
     copyGameData(gameData){ 
       const newBoard = [...gameData.board]
@@ -11,9 +11,9 @@ export default class RowColGame {
             locked: newLocked
         }
       return newGameData
-    }
+    },
 
-    createGame = (rows,cols,numPieces,numLocked) => {
+    createGame(rows,cols,numPieces,numLocked){
         let arr = []
         for(let i=0;i < rows;i++)
             for(let j=0;j < cols;j++)
@@ -22,19 +22,46 @@ export default class RowColGame {
         arr.sort((a,b) => (0.5 - Math.random()))
         const newLocked = []
         for(let i=0;i<numLocked;i++)newLocked.push(arr.pop())
-        
+     
         let newBoard=[]
         for(let i=0;i<rows;i++) newBoard.push([])
-        for(let i=0;i < rows;i++)
-            for(let j=0;j < cols;j++)
-                newBoard[i][j]=0
-            
-        newLocked.map(c => newBoard[c[0]][c[1]] = 1 + Math.floor(Math.random()*(numPieces-1)))
-        return {
+        
+        //create valid board
+        //top rows
+        for(let i=0;i < numPieces;i++)
+            for(let j=0;j < numPieces ;j++){
+                newBoard[i].push(1)
+                newBoard[i].push(2)
+              }
+        //bottom rows
+        for(let i=numPieces;i < rows;i++)
+          for(let j=0;j < numPieces ;j++){
+              newBoard[i].push(2)
+              newBoard[i].push(1)
+            }
+        
+        //hussle the board        
+        for(let a=0;a<4;a++)
+          {
+            //permute random row  
+          let rnd=Math.floor(Math.random()*rows)
+          let temp = newBoard[0]
+          newBoard[0] = newBoard[rnd]
+          newBoard[rnd] = temp 
+            //permute random column
+          rnd=Math.floor(Math.random()*cols)
+          for(let i=0;i<rows;i++){
+            let temp=newBoard[i][0]
+            newBoard[i][0]=newBoard[i][rnd]
+            newBoard[i][rnd]=temp
+          }
+        }
+
+        return this.resetBoard({
                 board: newBoard,
                 locked: newLocked
-            }
-    }
+            })
+    },
     
     doMove(gameData , r , c){
       //alert(`here I would maybe update ${r},${c} in game ${this.props.match.params.id}`)
@@ -46,7 +73,7 @@ export default class RowColGame {
         if (newGameData.board[r][c] >= numPieces) newGameData.board[r][c]=0
         return newGameData
       }
-    }
+    },
   
     resetBoard(gameData) {
       const numRows=gameData.board.length
@@ -59,9 +86,9 @@ export default class RowColGame {
         }
       }
       return newGameData
-    }
+    },
   
-    calculateGameLogic = (gameData) => {
+    calculateGameLogic(gameData){
       const numRows = gameData.board.length
       const numCols = gameData.board[0].length
       const maxDuplicatesPerCol = 3 
@@ -115,3 +142,4 @@ export default class RowColGame {
     }
   }
   
+  export default RowColGame

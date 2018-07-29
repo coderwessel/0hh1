@@ -27,8 +27,8 @@ const styles = theme => ({
 class CreateGameButton extends PureComponent {
 
   createGameAction = () => {
-    let rcg = new RowColGame()
-    let newGame=rcg.createGame(6,6,3,9)
+    // let rcg = new RowColGame()
+    let newGame= RowColGame.createGame(6,6,3,18)
     this.props.createGame({gamedata: newGame})
      this.props.startNewGame()  
   }
