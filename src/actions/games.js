@@ -1,8 +1,7 @@
 //actions/games.js
 import {fetchGame} from './game'
 import * as request from 'superagent'
-
-const baseUrl = 'http://localhost:4000'
+import {baseUrl} from '../db'
 
 export const FETCHED_ALL_GAMES = 'FETCHED_ALL_GAMES'
 export const ADD_GAME = 'ADD_GAME'
