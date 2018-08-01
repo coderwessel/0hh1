@@ -28,9 +28,10 @@ class CreateGameButton extends PureComponent {
 
   createGameAction = () => {
     // let rcg = new RowColGame()
-    let newGame= RowColGame.createGame(6,6,3,18)
+    let newGame= RowColGame.createGame(6,6,3,13)
     this.props.createGame({gamedata: newGame})
-     this.props.startNewGame()  
+     this.props.startNewGame()
+       
   }
 
   render() {

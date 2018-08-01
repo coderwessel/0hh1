@@ -50,8 +50,8 @@ const styles = theme => ({
     square:{
       position: 'relative',
       display: 'flex',
-      minHeight: 75,
-      minWidth: 75,
+      minHeight: 40,
+      minWidth: 40,
       maxHeight: 75,
       maxWidth: 75,
     },
@@ -80,20 +80,22 @@ const styles = theme => ({
   
 class GameContainer extends PureComponent {
   componentDidMount() {
-  this.props.fetchGame(this.props.match.params.id)
-  if(this.props.game.id){
-    const newGameLogic = RowColGame.calculateGameLogic(this.props.game.gamedata) 
-    this.props.updateGameLogic({gamelogic:newGameLogic})
-  }
-//  if(this.props.gamelogic.complete===100 && this.props.gamelogic.numErrors===0) this.props.finishGame()
-  }
-  componentWillMount() {
+  
     this.props.fetchGame(this.props.match.params.id)
     if(this.props.game.id){
       const newGameLogic = RowColGame.calculateGameLogic(this.props.game.gamedata) 
       this.props.updateGameLogic({gamelogic:newGameLogic})
     }
   }
+//  if(this.props.gamelogic.complete===100 && this.props.gamelogic.numErrors===0) this.props.finishGame()
+  
+  // componentWillMount() {
+  //   this.props.fetchGame(this.props.match.params.id)
+  //   if(this.props.game.id){
+  //     const newGameLogic = RowColGame.calculateGameLogic(this.props.game.gamedata) 
+  //     this.props.updateGameLogic({gamelogic:newGameLogic})
+  //   }
+  // }
 
   doMove = (r,c) => {
       this.props.playingGame()

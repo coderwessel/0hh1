@@ -119,7 +119,7 @@ const RowColGame = {
       }
         //tranpose the board to check for invalid columns
       const transboard = gameData.board[0].map((col1, i) => gameData.board.map(row1 => row1[i]));
-      console.log(transboard)
+      // console.log(transboard)
       for(let piece=1;piece<numPieces;piece++){
         for(let col=0;col<numCols;col++){
           validCols[piece][col] = 

@@ -43,25 +43,20 @@ class GamesContainer extends PureComponent {
     this.props.fetchAllGames()
       }
 
-    doSomethingWithGame = (gameId) => {
-       alert(`here I would maybe update ${gameId}`)
-    }
-
   render() {
     //matrial.ui
     const { classes } = this.props;
     //redux
     const {games} = this.props //mind the case of games
- 
     return (
         <div>
             <Typography> All Games </Typography>
-            <CreateGameButton/>
+            {/* <CreateGameButton/> */}
             <Table className={classes.table}>
                 <TableHead>
                         <TableRow>
                             <TableCell>#Id</TableCell>
-                            <TableCell text>Content</TableCell>
+                            {/* <TableCell text>Content</TableCell> */}
                             <TableCell text>Play</TableCell>
                         </TableRow>
                         </TableHead>
@@ -72,7 +67,7 @@ class GamesContainer extends PureComponent {
                         <TableCell component="th" scope="row">
                         {game.id}
                         </TableCell>
-                        <TableCell text>{JSON.stringify(game.gamedata)}</TableCell>
+                        {/* <TableCell text>{JSON.stringify(game.gamedata)}</TableCell> */}
                         <TableCell text><Button 
                             component={Link} 
                             to = {`/games/${game.id}`}
